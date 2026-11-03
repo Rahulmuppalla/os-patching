@@ -1,0 +1,33 @@
+---
+- name: Check root filesystem space
+  ansible.builtin.command:
+    argv:
+      - df
+      - -BG
+      - /
+  register: root_disk_check
+  changed_when: false
+
+- name: Display root filesystem usage
+  ansible.builtin.debug:
+    var: root_disk_check.stdout_lines
+
+- name: Check DNF package manager
+  ansible.builtin.command:
+    argv:
+      - dnf
+      - --version
+  register: dnf_check
+  changed_when: false
+
+- name: Display DNF version
+  ansible.builtin.debug:
+    var: dnf_check.stdout_lines
+
+- name: Verify expected RHEL version
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution_major_version | int == expected_rhel_major_version | int
+    fail_msg: >-
+      Inventory expects RHEL {{ expected_rhel_major_version }},
+      but the server reports RHEL {{ ansible_distribution_major_version }}.

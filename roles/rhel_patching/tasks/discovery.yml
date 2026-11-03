@@ -1,0 +1,30 @@
+---
+- name: Check whether Python 3 is available
+  ansible.builtin.raw: |
+    command -v python3 || command -v python
+  register: python_discovery
+  changed_when: false
+
+- name: Set discovered Python interpreter
+  ansible.builtin.set_fact:
+    ansible_python_interpreter: "{{ python_discovery.stdout | trim }}"
+
+- name: Gather operating system facts
+  ansible.builtin.setup:
+    gather_subset:
+      - min
+
+- name: Display discovered OS details
+  ansible.builtin.debug:
+    msg:
+      - "Hostname: {{ inventory_hostname }}"
+      - "OS: {{ ansible_distribution }}"
+      - "Major version: {{ ansible_distribution_major_version }}"
+      - "Python: {{ ansible_python_interpreter }}"
+
+- name: Validate supported RHEL versions
+  ansible.builtin.assert:
+    that:
+      - ansible_distribution == "RedHat"
+      - ansible_distribution_major_version in ["8", "9"]
+    fail_msg: "This playbook currently supports RHEL 8 and RHEL 9 only."

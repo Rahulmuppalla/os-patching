@@ -1,0 +1,18 @@
+---
+- name: Confirm RHEL 8 patching is enabled
+  ansible.builtin.assert:
+    that:
+      - rhel_patch_enabled | bool
+    fail_msg: "RHEL patching is disabled. Set rhel_patch_enabled=true."
+
+- name: Run RHEL 8 package update
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    exclude: "{{ package_excludes }}"
+    update_only: true
+  register: rhel8_patch_result
+
+- name: Display RHEL 8 patch result
+  ansible.builtin.debug:
+    var: rhel8_patch_result

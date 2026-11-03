@@ -1,0 +1,24 @@
+---
+# Patching must be explicitly enabled.
+rhel_patch_enabled: false
+
+# Set this to the customer's approved patching window.
+patching_window: "CHANGE_ME"
+
+# Pre-check thresholds.
+minimum_root_disk_gb: 2
+minimum_memory_mb: 1024
+
+# Package management.
+package_excludes: []
+
+# Reboot only when required by the patching workflow.
+reboot_enabled: true
+reboot_timeout: 1800
+
+# Platform values are assigned in the inventory group variables.
+virtualization_platform: "unknown"
+
+# Ansible connection settings.
+ansible_user: "CHANGE_ME"
+ansible_become: true

@@ -1,0 +1,18 @@
+---
+- name: Confirm RHEL 9 patching is enabled
+  ansible.builtin.assert:
+    that:
+      - rhel_patch_enabled | bool
+    fail_msg: "RHEL patching is disabled. Set rhel_patch_enabled=true."
+
+- name: Run RHEL 9 package update
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    exclude: "{{ package_excludes }}"
+    update_only: true
+  register: rhel9_patch_result
+
+- name: Display RHEL 9 patch result
+  ansible.builtin.debug:
+    var: rhel9_patch_result

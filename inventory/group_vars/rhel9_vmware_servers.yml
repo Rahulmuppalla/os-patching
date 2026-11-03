@@ -1,0 +1,3 @@
+---
+expected_rhel_major_version: 9
+virtualization_platform: "vmware"

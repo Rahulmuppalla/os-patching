@@ -1,0 +1,7 @@
+---
+- name: RHEL patching automation
+  hosts: rhel_servers
+  gather_facts: false
+
+  roles:
+    - role: rhel_patching

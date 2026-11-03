@@ -1,0 +1,33 @@
+---
+- name: Discover operating system and Python
+  ansible.builtin.import_tasks: discovery.yml
+
+- name: Run patching pre-checks
+  ansible.builtin.import_tasks: precheck.yml
+
+- name: Run patching workflow only when explicitly enabled
+  when: rhel_patch_enabled | bool
+  block:
+
+    - name: Collect pre-patch SOS report
+      ansible.builtin.import_tasks: sosreport.yml
+
+    - name: Create infrastructure snapshot
+      ansible.builtin.include_tasks: snapshot.yml
+
+    - name: Patch RHEL 8 servers
+      ansible.builtin.include_tasks: patch_rhel8.yml
+      when: ansible_distribution_major_version == "8"
+
+    - name: Patch RHEL 9 servers
+      ansible.builtin.include_tasks: patch_rhel9.yml
+      when: ansible_distribution_major_version == "9"
+
+    - name: Reboot server if required
+      ansible.builtin.import_tasks: reboot.yml
+
+    - name: Run post-patching checks
+      ansible.builtin.import_tasks: postcheck.yml
+
+    - name: Restore monitoring
+      ansible.builtin.import_tasks: nagios_restore.yml
